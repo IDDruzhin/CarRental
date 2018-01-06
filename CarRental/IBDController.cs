@@ -14,7 +14,8 @@ namespace CarRental
     {
         void Init(IMongoDatabase database);
         void AddCar(Car car);
-        void AddCarProperty(CarProperty carProperty);
+        CarProperty AddCarProperty(CarProperty carProperty);
+        List<CarProperty> FindCarProperties(List<String> descriptions);
         ObjectId AddCustomer(Customer customer);
         void AddPreference(Preference preference);
         void AddOrder(Order order);

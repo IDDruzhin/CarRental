@@ -21,19 +21,31 @@ namespace CarRental
         private IMongoCollection<Penalty> penalties;
         private IMongoCollection<Payment> paymentsArchive;
 
-
         void IBDController.AddCar(Car car)
         {
             var filter = Builders<Car>.Filter.Eq(x => x.model, car.model);
             var update = Builders<Car>.Update.Set(x => x.properties, car.properties).Set(x=>x.pricePerDay,car.pricePerDay).SetOnInsert(x => x.model, car.model);
             cars.UpdateOne(filter, update, new UpdateOptions { IsUpsert = true });
+            //Если такая модель уже есть, то все свойства заменяются
         }
 
-        void IBDController.AddCarProperty(CarProperty carProperty)
+        CarProperty IBDController.AddCarProperty(CarProperty carProperty)
         {
+
             var filter = Builders<CarProperty>.Filter.Eq(x => x.description, carProperty.description);
             var update = Builders<CarProperty>.Update.SetOnInsert(x => x.description, carProperty.description);
-            carProperties.UpdateOne(filter, update, new UpdateOptions { IsUpsert = true });
+            var result = carProperties.FindOneAndUpdate(filter, update, new FindOneAndUpdateOptions<CarProperty, CarProperty> { IsUpsert = true, ReturnDocument = ReturnDocument.After });
+            return result;
+            //Возвращается найденное свойство или добавленное, если такого не было
+        }
+
+        List<CarProperty> IBDController.FindCarProperties(List<String> descriptions)
+        {
+
+            var filter = Builders<CarProperty>.Filter.In(x => x.description, descriptions);
+            var result = carProperties.Find(filter).ToList();
+            return result;
+            //Поиск существующих требований по описанию
         }
 
         ObjectId IBDController.AddCustomer(Customer customer)
@@ -42,6 +54,7 @@ namespace CarRental
             var update = Builders<Customer>.Update.Set(x => x.phoneNumber, customer.phoneNumber).SetOnInsert(x => x.name, customer.name).SetOnInsert(x => x.surname, customer.surname).SetOnInsert(x => x.patronymic, customer.patronymic).SetOnInsert(x => x.discountRate, customer.discountRate);
             var result = customers.FindOneAndUpdate(filter, update, new FindOneAndUpdateOptions<Customer, Customer> { IsUpsert = true, ReturnDocument = ReturnDocument.After });
             return result.id;
+            //Если такой номер паспорта уже есть, то меняется только телефонный номер. Возвращатся ID для найденного клиента или нового, если такого не было
         }
 
         void IBDController.AddOrder(Order order)
@@ -83,13 +96,13 @@ namespace CarRental
         {
             db = database;
             cars = db.GetCollection<Car>("cars");
-            carProperties = db.GetCollection<CarProperty>("car properties");
+            carProperties = db.GetCollection<CarProperty>("car_properties");
             customers = db.GetCollection<Customer>("customers");
             preferences = db.GetCollection<Preference>("preferences");
             orders = db.GetCollection<Order>("orders");
-            ordersArchive = db.GetCollection<Order>("orders archive");
+            ordersArchive = db.GetCollection<Order>("orders_archive");
             penalties = db.GetCollection<Penalty>("penalties");
-            paymentsArchive = db.GetCollection<Payment>("payments archive");
+            paymentsArchive = db.GetCollection<Payment>("payments_archive");
     }
 
         List<CarProperty> IBDController.GetAllCarProperties()
