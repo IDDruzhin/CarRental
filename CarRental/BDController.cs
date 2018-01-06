@@ -112,7 +112,8 @@ namespace CarRental
             ordersArchive = db.GetCollection<Order>("orders_archive");
             penalties = db.GetCollection<Penalty>("penalties");
             paymentsArchive = db.GetCollection<Payment>("payments_archive");
-    }
+            preferencesArchive = db.GetCollection<Preference>("preferences_archive");
+        }
 
         List<CarProperty> IBDController.GetAllCarProperties()
         {
