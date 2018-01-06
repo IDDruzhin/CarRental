@@ -1,0 +1,120 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using MongoDB.Bson;
+using MongoDB.Driver;
+
+namespace CarRental
+{
+    class BDController : IBDController
+    {
+        private IMongoDatabase db;
+        private IMongoCollection<CarProperty> carProperties;
+        private IMongoCollection<Car> cars;
+        private IMongoCollection<Customer> customers;
+        private IMongoCollection<Preference> preferences;
+        private IMongoCollection<Order> orders;
+        private IMongoCollection<Order> ordersArchive;
+        private IMongoCollection<Penalty> penalties;
+        private IMongoCollection<Payment> paymentsArchive;
+
+
+        void IBDController.AddCar(Car car)
+        {
+            var filter = Builders<Car>.Filter.Eq(x => x.model, car.model);
+            var update = Builders<Car>.Update.Set(x => x.properties, car.properties).Set(x=>x.pricePerDay,car.pricePerDay).SetOnInsert(x => x.model, car.model);
+            cars.UpdateOne(filter, update, new UpdateOptions { IsUpsert = true });
+        }
+
+        void IBDController.AddCarProperty(CarProperty carProperty)
+        {
+            var filter = Builders<CarProperty>.Filter.Eq(x => x.description, carProperty.description);
+            var update = Builders<CarProperty>.Update.SetOnInsert(x => x.description, carProperty.description);
+            carProperties.UpdateOne(filter, update, new UpdateOptions { IsUpsert = true });
+        }
+
+        ObjectId IBDController.AddCustomer(Customer customer)
+        {
+            var filter = Builders<Customer>.Filter.Eq(x => x.passport, customer.passport);
+            var update = Builders<Customer>.Update.Set(x => x.phoneNumber, customer.phoneNumber).SetOnInsert(x => x.name, customer.name).SetOnInsert(x => x.surname, customer.surname).SetOnInsert(x => x.patronymic, customer.patronymic).SetOnInsert(x => x.discountRate, customer.discountRate);
+            var result = customers.FindOneAndUpdate(filter, update, new FindOneAndUpdateOptions<Customer, Customer> { IsUpsert = true, ReturnDocument = ReturnDocument.After });
+            return result.id;
+        }
+
+        void IBDController.AddOrder(Order order)
+        {
+            orders.InsertOne(order);
+        }
+
+        void IBDController.AddPayment(Payment payment)
+        {
+            paymentsArchive.InsertOne(payment);
+        }
+
+        void IBDController.AddPenalty(Penalty penalty)
+        {
+            penalties.InsertOne(penalty);
+        }
+
+        void IBDController.AddPreference(Preference preference)
+        {
+            preferences.InsertOne(preference);
+        }
+
+        List<Car> IBDController.GetAllCars()
+        {
+            return cars.Find(new BsonDocument()).ToList();
+        }
+
+        List<Order> IBDController.GetActiveOrders()
+        {
+            return orders.Find(new BsonDocument()).ToList();
+        }
+
+        List<Order> IBDController.GetArchiveOrders()
+        {
+            return ordersArchive.Find(new BsonDocument()).ToList();
+        }
+
+        void IBDController.Init(IMongoDatabase database)
+        {
+            db = database;
+            cars = db.GetCollection<Car>("cars");
+            carProperties = db.GetCollection<CarProperty>("car properties");
+            customers = db.GetCollection<Customer>("customers");
+            preferences = db.GetCollection<Preference>("preferences");
+            orders = db.GetCollection<Order>("orders");
+            ordersArchive = db.GetCollection<Order>("orders archive");
+            penalties = db.GetCollection<Penalty>("penalties");
+            paymentsArchive = db.GetCollection<Payment>("payments archive");
+    }
+
+        List<CarProperty> IBDController.GetAllCarProperties()
+        {
+            return carProperties.Find(new BsonDocument()).ToList();
+        }
+
+        List<Customer> IBDController.GetAllCustomers()
+        {
+            return customers.Find(new BsonDocument()).ToList();
+        }
+
+        List<Preference> IBDController.GetAllPreferences()
+        {
+            return preferences.Find(new BsonDocument()).ToList();
+        }
+
+        List<Penalty> IBDController.GetAllPenalties()
+        {
+            return penalties.Find(new BsonDocument()).ToList();
+        }
+
+        List<Payment> IBDController.GetAllPayments()
+        {
+            return paymentsArchive.Find(new BsonDocument()).ToList();
+        }
+    }
+}
