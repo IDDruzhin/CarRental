@@ -16,17 +16,26 @@ namespace CarRental
         private IMongoCollection<Car> cars;
         private IMongoCollection<Customer> customers;
         private IMongoCollection<Preference> preferences;
+        private IMongoCollection<Preference> preferencesArchive;
         private IMongoCollection<Order> orders;
         private IMongoCollection<Order> ordersArchive;
         private IMongoCollection<Penalty> penalties;
         private IMongoCollection<Payment> paymentsArchive;
 
+        /*
         void IBDController.AddCar(Car car)
         {
             var filter = Builders<Car>.Filter.Eq(x => x.model, car.model);
             var update = Builders<Car>.Update.Set(x => x.properties, car.properties).Set(x=>x.pricePerDay,car.pricePerDay).SetOnInsert(x => x.model, car.model);
             cars.UpdateOne(filter, update, new UpdateOptions { IsUpsert = true });
             //Если такая модель уже есть, то все свойства заменяются
+        }
+        */
+
+        void IBDController.AddCar(Car car)
+        {
+            cars.InsertOne(car);
+            //Добавляется новая машина. Даже если такая уже есть в БД.
         }
 
         CarProperty IBDController.AddCarProperty(CarProperty carProperty)
@@ -128,6 +137,25 @@ namespace CarRental
         List<Payment> IBDController.GetAllPayments()
         {
             return paymentsArchive.Find(new BsonDocument()).ToList();
+        }
+
+        List<string> IBDController.GetAllCarModels()
+        {
+            return cars.Distinct(x=>x.model,x=>true).ToList();
+        }
+
+        void IBDController.AcceptPreference(ObjectId id)
+        {
+            var filter = Builders<Preference>.Filter.Eq(x => x.id, id);
+            var result = preferences.FindOneAndDelete(filter);
+            preferencesArchive.InsertOne(result);
+        }
+
+        void IBDController.CompleteOrder(ObjectId id)
+        {
+            var filter = Builders<Order>.Filter.Eq(x => x.id, id);
+            var result = orders.FindOneAndDelete(filter);
+            ordersArchive.InsertOne(result);
         }
     }
 }

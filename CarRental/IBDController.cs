@@ -29,5 +29,8 @@ namespace CarRental
         List<Order> GetArchiveOrders();
         List<Penalty> GetAllPenalties();
         List<Payment> GetAllPayments();
+        List<String> GetAllCarModels();
+        void AcceptPreference(ObjectId id);
+        void CompleteOrder(ObjectId id);
     }
 }
