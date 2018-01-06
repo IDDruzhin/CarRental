@@ -22,16 +22,6 @@ namespace CarRental
         private IMongoCollection<Penalty> penalties;
         private IMongoCollection<Payment> paymentsArchive;
 
-        /*
-        void IBDController.AddCar(Car car)
-        {
-            var filter = Builders<Car>.Filter.Eq(x => x.model, car.model);
-            var update = Builders<Car>.Update.Set(x => x.properties, car.properties).Set(x=>x.pricePerDay,car.pricePerDay).SetOnInsert(x => x.model, car.model);
-            cars.UpdateOne(filter, update, new UpdateOptions { IsUpsert = true });
-            //Если такая модель уже есть, то все свойства заменяются
-        }
-        */
-
         void IBDController.AddCar(Car car)
         {
             cars.InsertOne(car);
