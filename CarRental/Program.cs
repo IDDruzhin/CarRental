@@ -22,28 +22,27 @@ namespace CarRental
             List<String> info = new List<string>();
             info.Add("0. Выход");
             info.Add("1. Отправка предпочтения");  //+
-            info.Add("2. Оформление сделки");
-            info.Add("3. Добавить автомобиль"); //+
-            info.Add("4. Завершение сделки");
-            info.Add("5. Список доступных автомобилей");
-            info.Add("6. Список всех автомобилей"); //+
-            info.Add("7. Список автомобилей в прокате");
-            info.Add("8. Список постоянных клиентов");
-            info.Add("9. Список заключенных сделок");
-            info.Add("10. Прибыль");
-            info.Add("11. Список всех клиентов"); //+
-            info.Add("12. Список популярных машин");
-            info.Add("13. Список клиентов, приносящих доход больше среднего");
-            info.Add("14. Эффективность системы штрафов");
+            info.Add("2. Добавить автомобиль"); //+
+            info.Add("3. Список доступных автомобилей");//+
+            info.Add("4. Список всех автомобилей"); //+
+            info.Add("5. Список автомобилей в прокате");//+
+            info.Add("6. Список постоянных клиентов");//+
+            info.Add("7. Список заключенных сделок");//+
+            info.Add("8. Прибыль");
+            info.Add("9. Список всех клиентов"); //+
+            info.Add("10. Список популярных машин");
+            info.Add("11. Список клиентов, приносящих доход больше среднего");
+            info.Add("12. Эффективность системы штрафов");
 
-            foreach (var s in info)
-            {
-                Console.WriteLine(s);
-            }
             String line;
             List<CarProperty> inputProperties;
             while (true)
             {
+                foreach (var s in info)
+                {
+                    Console.WriteLine(s);
+                }
+
                 line = Console.ReadLine();
                 switch (line)
                 {
@@ -106,9 +105,31 @@ namespace CarRental
                         Console.WriteLine("Максимальная стоимость проката за день:");
                         preference.maxPricePerDay = System.Convert.ToDouble(Console.ReadLine());
                         controller.AddPreference(preference);
-                        Console.WriteLine("OK");
+                        var select_car_id = controller.CheckPreference(preference);
+                        if (ObjectId.Empty != select_car_id)
+                        {
+                            Console.WriteLine("OK");
+                            Console.WriteLine("Вы хотите совершить сделку? (0 - нет, 1 - да)");
+                            line = Console.ReadLine();
+                            if (line == "1")
+                            {
+                                Order order = new Order { };
+                                order.carId = select_car_id;
+                                order.customerId = preference.customerId;
+                                order.startDate = preference.startDate;
+                                order.finishDate = order.startDate.AddDays(preference.rentalPeriod);
+                                order.preferenceId = preference.id;
+                                controller.AddOrder(order);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("По вашему запросу не найдено машин");
+                        }
+                        
+
                         break;
-                    case "3":
+                    case "2":
                         Car car = new Car { };
                         Console.WriteLine("Модель:");
                         car.model = Console.ReadLine();
@@ -141,7 +162,34 @@ namespace CarRental
                         controller.AddCar(car);
                         Console.WriteLine("OK");
                         break;
-                    case "6":
+                    case "3":
+                        List<Car> avialableCarsList = controller.GetAllAvilibleCars();
+                        for (int i = 0; i < avialableCarsList.Count(); i++)
+                        {
+                            Console.Write(i + 1);
+                            Console.Write(". Модель: ");
+                            Console.Write(avialableCarsList[i].model);
+                            Console.Write(" | Свойства: ");
+                            List<CarProperty> propList = avialableCarsList[i].properties;
+                            if (propList.Count() != 0)
+                            {
+                                for (int j = 0; j < propList.Count() - 1; j++)
+                                {
+                                    Console.Write(propList[j].description);
+                                    Console.Write(", ");
+                                }
+                                Console.Write(propList.Last().description);
+                            }
+                            Console.Write(" | Стоимость проката за день: ");
+                            Console.Write(avialableCarsList[i].pricePerDay);
+                            Console.WriteLine();
+                        }
+                        if (avialableCarsList.Count() == 0)
+                        {
+                            Console.WriteLine();
+                        }
+                        break;
+                    case "4":
                         List<Car> carsList = controller.GetAllCars();
                         for (int i=0; i<carsList.Count();i++)
                         {
@@ -168,7 +216,76 @@ namespace CarRental
                             Console.WriteLine();
                         }                        
                         break;
-                    case "11":
+                    case "5":
+                        List<Car> InUseCarsList = controller.GetAllInUseCars();
+                        for (int i = 0; i < InUseCarsList.Count(); i++)
+                        {
+                            Console.Write(i + 1);
+                            Console.Write(". Модель: ");
+                            Console.Write(InUseCarsList[i].model);
+                            Console.Write(" | Свойства: ");
+                            List<CarProperty> propList = InUseCarsList[i].properties;
+                            if (propList.Count() != 0)
+                            {
+                                for (int j = 0; j < propList.Count() - 1; j++)
+                                {
+                                    Console.Write(propList[j].description);
+                                    Console.Write(", ");
+                                }
+                                Console.Write(propList.Last().description);
+                            }
+                            Console.Write(" | Стоимость проката за день: ");
+                            Console.Write(InUseCarsList[i].pricePerDay);
+                            Console.WriteLine();
+                        }
+                        if (InUseCarsList.Count() == 0)
+                        {
+                            Console.WriteLine();
+                        }
+                        break;
+                    case "6":
+                        List<Customer> BestCustomersList = controller.GetBestCustomers();
+                        for (int i = 0; i < BestCustomersList.Count(); i++)
+                        {
+                            Console.Write(i + 1);
+                            Console.Write(". Имя: ");
+                            Console.Write(BestCustomersList[i].name);
+                            Console.Write(" | Фамилия: ");
+                            Console.Write(BestCustomersList[i].surname);
+                            Console.Write(" | Паспорт: ");
+                            Console.Write(BestCustomersList[i].passport);
+                            Console.Write(" | Телефон: ");
+                            Console.Write(BestCustomersList[i].phoneNumber);
+                            Console.WriteLine();
+                        }
+                        if (BestCustomersList.Count() == 0)
+                        {
+                            Console.WriteLine();
+                        }
+                        break;
+                    case "7":
+                        List<Order> OrdersList = controller.GetActiveOrders();
+                        for (int i = 0; i < OrdersList.Count(); i++)
+                        {
+                            Console.Write(i + 1);
+                            Console.Write(". Машина: ");
+                            Console.Write(OrdersList[i].carId);
+                            Console.Write(" | Клиент: ");
+                            Console.Write(OrdersList[i].customerId);
+                            Console.Write(" | Предпочтния: ");
+                            Console.Write(OrdersList[i].preferenceId);
+                            Console.Write(" | Начало аренды: ");
+                            Console.Write(OrdersList[i].preferenceId);
+                            Console.Write(" | Завершение аренды: ");
+                            Console.Write(OrdersList[i].finishDate);
+                            Console.WriteLine();
+                        }
+                        if (OrdersList.Count() == 0)
+                        {
+                            Console.WriteLine();
+                        }
+                        break;
+                    case "9":
                         List<Customer> customersList = controller.GetAllCustomers();
                         if (customersList.Count()!=0)
                         {

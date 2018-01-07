@@ -80,7 +80,50 @@ namespace CarRental
         {
             return cars.Find(new BsonDocument()).ToList();
         }
-
+        List<Car> IBDController.GetAllAvilibleCars()
+        {
+            List<Car> carsList = cars.Find(new BsonDocument()).ToList();
+            List<Order> active_orders = orders.Find(new BsonDocument()).ToList();
+            List<Car> avialableCarsList = new List<Car>();
+            foreach (var car in carsList)
+            {
+                if (null == active_orders.Find(x => x.carId == car.id))
+                    avialableCarsList.Add(car);
+                else
+                {
+                    bool IsFree = true;
+                    foreach (var order in active_orders)
+                    {
+                        if ((order.carId == car.id) && (order.startDate <= DateTime.Now) && (order.finishDate >= DateTime.Now))
+                            IsFree = false;
+                    }
+                    if (IsFree)
+                        avialableCarsList.Add(car);
+                }
+            }
+            return avialableCarsList;
+        }
+        List<Car> IBDController.GetAllInUseCars()
+        {
+            List<Car> carsList = cars.Find(new BsonDocument()).ToList();
+            List<Order> active_orders = orders.Find(new BsonDocument()).ToList();
+            List<Car> InUseCarsList = new List<Car>();
+            foreach (var car in carsList)
+            {
+                if (null != active_orders.Find(x => x.carId == car.id))
+                {
+                    bool IsFree = true;
+                    foreach (var order in active_orders)
+                    {
+                        if ((order.carId == car.id) && (order.startDate <= DateTime.Now) && (order.finishDate >= DateTime.Now))
+                            IsFree = false;
+                    }
+                    if (!IsFree)
+                        InUseCarsList.Add(car);
+                }
+            }
+            return InUseCarsList;
+        }
         List<Order> IBDController.GetActiveOrders()
         {
             return orders.Find(new BsonDocument()).ToList();
@@ -114,7 +157,27 @@ namespace CarRental
         {
             return customers.Find(new BsonDocument()).ToList();
         }
+        List<Customer> IBDController.GetBestCustomers()
+        {
+            List<Order> active_orders = orders.Find(new BsonDocument()).ToList();
+            Dictionary<ObjectId, int> count_orders = new Dictionary<ObjectId, int>();
+            List<Customer> bestCustomrs = new List<Customer>();
+            foreach (var order in active_orders)
+            {
+                int count = 0;
+                if (!count_orders.ContainsKey(order.customerId))
+                    count_orders.Add(order.customerId, 1);
+                else
+                {
+                    count_orders.TryGetValue(order.customerId, out count);
+                    count++;
+                    if (count == 10)
+                        bestCustomrs.Add(customers.Find(x => x.id == order.customerId).ToList()[0]);
 
+                }
+            }
+            return bestCustomrs;
+        }
         List<Preference> IBDController.GetAllPreferences()
         {
             return preferences.Find(new BsonDocument()).ToList();
@@ -147,6 +210,37 @@ namespace CarRental
             var filter = Builders<Order>.Filter.Eq(x => x.id, id);
             var result = orders.FindOneAndDelete(filter);
             ordersArchive.InsertOne(result);
+        }
+        ObjectId IBDController.CheckPreference(Preference p)
+        {
+            var filter = new BsonDocument("$and", new BsonArray
+            {
+                         new BsonDocument("pricePerDay",new BsonDocument("$lte", p.maxPricePerDay)),
+                         new BsonDocument("model", p.carModel)
+            });
+            var tmp_cars = cars.Find(filter).ToList();
+            foreach (var car in tmp_cars)
+            {
+                bool comp = true;
+                foreach (var prop in p.properties)
+                {
+                    if (null == car.properties.Find(x => x.id == prop.id))
+                        comp = false;
+                }
+                if (comp)
+                {
+                    List<Order> active_orders = orders.Find(new BsonDocument()).ToList();
+                    bool InUse = false;
+                    foreach (var order in active_orders)
+                    {
+                        if ((order.carId == car.id) && ((order.startDate <= p.startDate && order.finishDate > p.startDate) || (order.startDate > p.startDate && order.startDate < p.startDate.AddDays(p.rentalPeriod))))
+                            InUse = true;
+                    }
+                    if (!InUse)
+                        return car.id;
+                }
+            }
+            return ObjectId.Empty;
         }
     }
 }
