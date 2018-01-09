@@ -23,7 +23,10 @@ namespace CarRental
         void AddPayment(Payment payment);
         List<CarProperty> GetAllCarProperties();
         List<Car> GetAllCars();
+        List<Car> GetAllAvilibleCars();
+        List<Car> GetAllInUseCars();
         List<Customer> GetAllCustomers();
+        List<Customer> GetBestCustomers();
         List<Preference> GetAllPreferences();
         List<Order> GetActiveOrders();
         List<Order> GetArchiveOrders();
@@ -32,5 +35,6 @@ namespace CarRental
         List<String> GetAllCarModels();
         void AcceptPreference(ObjectId id);
         void CompleteOrder(ObjectId id);
+        ObjectId CheckPreference(Preference p);
     }
 }
