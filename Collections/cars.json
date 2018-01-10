@@ -1,0 +1,6 @@
+{"_id":{"$oid":"5a50fba406b7e8350098a428"},"model":"Chevrolet","properties":[{"_id":{"$oid":"5a50fba0a1ee4e37808a32b2"},"description":"автомат"},{"_id":{"$oid":"5a50fba0a1ee4e37808a32b4"},"description":"кондиционер"}],"pricePerDay":2500.0}
+{"_id":{"$oid":"5a50fbc406b7e8350098a429"},"model":"Chevrolet","properties":[{"_id":{"$oid":"5a50fba0a1ee4e37808a32b4"},"description":"кондиционер"}],"pricePerDay":2000.0}
+{"_id":{"$oid":"5a50fc1306b7e8350098a42a"},"model":"Ford","properties":[{"_id":{"$oid":"5a50fba0a1ee4e37808a32b4"},"description":"кондиционер"}],"pricePerDay":2400.0}
+{"_id":{"$oid":"5a50fc3206b7e8350098a42b"},"model":"Renault","properties":[{"_id":{"$oid":"5a50fba0a1ee4e37808a32b4"},"description":"кондиционер"}],"pricePerDay":1700.0}
+{"_id":{"$oid":"5a50fc6106b7e8350098a42c"},"model":"Renault","properties":[{"_id":{"$oid":"5a50fba0a1ee4e37808a32b2"},"description":"автомат"},{"_id":{"$oid":"5a50fba0a1ee4e37808a32b4"},"description":"кондиционер"}],"pricePerDay":1600.0}
+{"_id":{"$oid":"5a56412506b7e82edc4b9105"},"model":"Hyundai","properties":[{"_id":{"$oid":"5a50fba0a1ee4e37808a32b4"},"description":"кондиционер"}],"pricePerDay":1900.0}

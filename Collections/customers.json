@@ -1,0 +1,7 @@
+{"_id":{"$oid":"5a50fce0a1ee4e37808a3308"},"passport":"8736521983","discountRate":0.0,"name":"Иван","patronymic":"Петрович","phoneNumber":"89367112323","surname":"Сидоров"}
+{"_id":{"$oid":"5a50fdaea1ee4e37808a333e"},"passport":"7832519632","discountRate":0.0,"name":"Олег","patronymic":"Олегович","phoneNumber":"89306271833","surname":"Кузнецов"}
+{"_id":{"$oid":"5a50fe97a1ee4e37808a3378"},"passport":"7832918374","discountRate":0.0,"name":"Ольга","patronymic":"Васильевна","phoneNumber":"89362789043","surname":"Шубина"}
+{"_id":{"$oid":"5a50ff0fa1ee4e37808a3398"},"passport":"7845602913","discountRate":0.0,"name":"Петр","patronymic":"Сергеевич","phoneNumber":"89736177999","surname":"Скрябин"}
+{"_id":{"$oid":"5a5644b5ae6580db12355d26"},"passport":"8743267103","discountRate":0.0,"name":"Федор","patronymic":"Васильевич","phoneNumber":"89787782222","surname":"Угрюмов"}
+{"_id":{"$oid":"5a564524ae6580db12355d46"},"passport":"2981378290","discountRate":0.0,"name":"Федор","patronymic":"Федорович","phoneNumber":"89371681721","surname":"Краснов"}
+{"_id":{"$oid":"5a565101ae6580db12355e8e"},"passport":"7362901283","discountRate":0.0,"name":"Егор","patronymic":"Ильич","phoneNumber":"89378172611","surname":"Чернов"}
