@@ -93,8 +93,22 @@ namespace CarRental
             List<Car> avialableCarsList = new List<Car>();
             foreach (var car in carsList)
             {
+                var res = active_orders.Find(x => x.carId == car.id);
+                if (res==null)
+                {
+                    avialableCarsList.Add(car);
+                }
+                else
+                {
+                    if (res.startDate > DateTime.Now || res.finishDate < DateTime.Now)
+                    {
+                        avialableCarsList.Add(car);
+                    }
+                }
+                /*
                 if (null == active_orders.Find(x => x.carId == car.id && (x.startDate > DateTime.Now || x.finishDate < DateTime.Now)))
                     avialableCarsList.Add(car);
+                    */
             }
             return avialableCarsList;
         }
@@ -105,10 +119,15 @@ namespace CarRental
             List<Car> InUseCarsList = new List<Car>();
             foreach (var car in carsList)
             {
-                if (null != active_orders.Find(x => x.carId == car.id && (x.startDate > DateTime.Now || x.finishDate < DateTime.Now)))
+                var res = active_orders.Find(x => x.carId == car.id);
+                if (res != null && !(res.startDate > DateTime.Now || res.finishDate < DateTime.Now))
                 {
                     InUseCarsList.Add(car);
                 }
+                /*
+                if (null != active_orders.Find(x => x.carId == car.id && (x.startDate > DateTime.Now || x.finishDate < DateTime.Now)))
+                    InUseCarsList.Add(car);
+                    */
             }
             return InUseCarsList;
         }
