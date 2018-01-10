@@ -34,14 +34,21 @@ namespace CarRental
             info.Add("11. Список клиентов, приносящих доход больше среднего");
             info.Add("12. Эффективность системы штрафов");
 
+            foreach (var s in info)
+            {
+                Console.WriteLine(s);
+            }
+
             String line;
             List<CarProperty> inputProperties;
             while (true)
             {
+                /*
                 foreach (var s in info)
                 {
                     Console.WriteLine(s);
                 }
+                */
 
                 line = Console.ReadLine();
                 switch (line)
@@ -153,7 +160,8 @@ namespace CarRental
                             inputProperties = new List<CarProperty>();
                             foreach (var s in inputStringsProperties)
                             {
-                                inputProperties.Add(controller.AddCarProperty(new CarProperty { description = s }));
+                                inputProperties.Add(new CarProperty { description = s });
+                                //inputProperties.Add(controller.AddCarProperty(new CarProperty { description = s }));
                             }
                             car.properties = inputProperties;
                         }
@@ -272,10 +280,10 @@ namespace CarRental
                             Console.Write(OrdersList[i].carId);
                             Console.Write(" | Клиент: ");
                             Console.Write(OrdersList[i].customerId);
-                            Console.Write(" | Предпочтния: ");
+                            Console.Write(" | Предпочтения: ");
                             Console.Write(OrdersList[i].preferenceId);
                             Console.Write(" | Начало аренды: ");
-                            Console.Write(OrdersList[i].preferenceId);
+                            Console.Write(OrdersList[i].startDate);
                             Console.Write(" | Завершение аренды: ");
                             Console.Write(OrdersList[i].finishDate);
                             Console.WriteLine();
